@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:8.0.19
+    volumes:
+      - ./docker/db/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: app
+    ports:
+      - "33061:3306"
+# amazonlinux:2.0.20200207.1 ベース
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_app
+    ports:
+      - 1080:80
+    environment:
+      APP_ENV: docker
+    volumes:
+      - .:/opt/app
+    working_dir: /opt/app
+    tty: true
+    depends_on:
+      - "db"
+    entrypoint: docker/entrypoint_app.sh
+# myadmin
+  db-ui:
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    depends_on:
+      - "db"
+    ports:
+      - 1090:80
+# mail trap
+  mailtrap:
+    image: djfarrelly/maildev
+    ports:
+      - 1100:80
