@@ -7,6 +7,13 @@ docker-compose exec app /bin/bash
 ```
 
 ```
+composer require laravel/ui
+php artisan ui vue --auth
+
+php artisan migrate
+```
+
+```
 php artisan make:model Models/単数形 --migration
 ```
 
